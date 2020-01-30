@@ -8,6 +8,40 @@ import matplotlib.pyplot as plt
 #     def build(self):
 #         return Button(text='Hello World')
 
+class DoseRefPoint:
+
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.cartesian = [x, y, z]
+
+class DataTable:
+    """Class used to hold Data from .xls files"""
+    def __init__(self, loc):
+        self.loc = loc
+        self.sheet = pd.read_excel(loc, header=None)
+
+    def getActiveLength(self):
+        return self.sheet[2][9]
+
+    def getDoseRateConst(self):
+        return self.sheet[2][4]
+
+    def getRadialDoseConst(self, r):
+        table = pd.read_excel(self.loc, skiprows=10, nrows=13, usecols="B:C", index_col=0)
+        return np.interp(r, table.index, table.values.flatten())
+
+    def getAnisotropyConst(self, r, theta):
+        table = pd.read_excel(self.loc, skiprows=10, nrows=48, usecols="E:O", index_col=0)
+        r_vals = table.columns
+        theta_vals = table.index
+        F_vals = table.to_numpy()
+        f = interpolate.interp2d(r_vals, theta_vals, F_vals)  # 2D interpolate f(r, theta)
+        return f(r, theta)
+
+
+
 class Source:
     _numofsources = 0
 
@@ -94,22 +128,26 @@ def readFile():
 
 
 def main():
-    source1 = Source([0, 0], 10)
-    source2 = Source([0, 2], 10)
-    source3 = Source([0, -2], 10)
-    source4 = Source([3, 1], 10)
-    source5 = Source([3, -1], 10)
-    sourcelist = []
-    doselist = []
-    sourcelist.append(source1)
-    sourcelist.append(source2)
-    doselist.append(computeDose(source1, [3.1, 2.6], 10))
-    doselist.append(computeDose(source2, [-2.0, 0], 10))
-    doselist.append(computeDose(source3, [-2.0, 0], 10))
-    doselist.append(computeDose(source4, [-2.0, 0], 10))
-    doselist.append(computeDose(source5, [-2.0, 0], 10))
+    # source1 = Source([0, 0], 10)
+    # source2 = Source([0, 2], 10)
+    # source3 = Source([0, -2], 10)
+    # source4 = Source([3, 1], 10)
+    # source5 = Source([3, -1], 10)
+    # sourcelist = []
+    # doselist = []
+    # sourcelist.append(source1)
+    # sourcelist.append(source2)
+    # doselist.append(computeDose(source1, [3.1, 2.6], 10))
+    # doselist.append(computeDose(source2, [-2.0, 0], 10))
+    # doselist.append(computeDose(source3, [-2.0, 0], 10))
+    # doselist.append(computeDose(source4, [-2.0, 0], 10))
+    # doselist.append(computeDose(source5, [-2.0, 0], 10))
+    #
+    # print(doselist)
+    loc = '192ir-hdr-flexisource.xls'
+    a = DataTable(loc)
+    print(a.getAnisotropyConst(1, 180))
 
-    print(doselist)
 
 if __name__ == "__main__":
     main()
