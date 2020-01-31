@@ -102,17 +102,39 @@ def computeRadialDose(r, theta, L):
         G = 1/(r**2 - (L**2/4))
     return G
 
-def main():
+
+def runExample():
 
     a = DoseRefPoint(-2.0, 0, 0)
+    b = DoseRefPoint(1.5, 0, 0)
+    c = DoseRefPoint(1.5, 3, 0)
+    d = DoseRefPoint(1.5, -4, 0)
+    e = DoseRefPoint(4, 0, 0)
     list = []
     list.append(Source(0, 0, 0, 10))
     list.append(Source(0, 2, 0, 10))
     list.append(Source(0, -2, 0, 10))
     list.append(Source(3, 1, 0, 10))
     list.append(Source(3, -1, 0, 10))
-    dose = a.computeDose(list, 10)
-    print(dose)
+
+
+    dose_a = a.computeDose(list, 10)
+    dose_b = b.computeDose(list, 10)
+    dose_c = c.computeDose(list, 10)
+    dose_d = d.computeDose(list, 10)
+    dose_e = e.computeDose(list, 10)
+
+    dose_list = [dose_a, dose_b, dose_c, dose_d, dose_e]
+    sum_dose_list = [np.sum(dose_a), np.sum(dose_b), np.sum(dose_c), np.sum(dose_d), np.sum(dose_e)]
+
+
+    return dose_list, sum_dose_list
+
+
+def main():
+    results = runExample()
+    for i in range(len(results[1])):
+        print("Total Dose: %d" % (results[1][i]))
 
 if __name__ == "__main__":
     main()
