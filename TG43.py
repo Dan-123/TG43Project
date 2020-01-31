@@ -17,8 +17,9 @@ class DoseRefPoint:
         self.cartesian = [x, y, z]
 
 
-    def computeDose(self, source_list):
+    def computeDose(self, source_list, time):
         """Method to compute dose from a list of sources at this point"""
+        time = time/60
         for source in source_list:
             xdist = np.abs(source.x - self.x)
             ydist = np.abs(source.y - self.y)
@@ -27,8 +28,11 @@ class DoseRefPoint:
 
             L = source.data.getActiveLength()
             G = computeRadialDose(r, theta, L)
-            pass
+            G_0 = computeRadialDose(1, np.deg2rad(90), L)
 
+            DoseRate = source.aks * source.data.getDoseRateConst() * (G/G_0) * source.data.getRadialDoseConst(r) * source.data.getAnisotropyConst(r, np.rad2deg(theta)) *(1/.0001)
+            Dose = DoseRate * time # Dose in cGy
+            return Dose
 class DataTable:
     """Class used to hold Data from .xls files"""
     def __init__(self, loc):
@@ -86,7 +90,7 @@ def cartesian2Polar(x, y, z, in_degrees=False):
     return [r, phi, theta]
 
 def computeRadialDose(r, theta, L):
-    beta = np.arcsin((L * np.sin(np.arctan((r * np.sin(theta)) / (r * np.cos(theta) - (L / 2))))) / (
+    beta = np.arcsin((L * np.sin(np.arctan2((r * np.sin(theta)) , (r * np.cos(theta) - (L / 2))))) / (
         np.sqrt((r * np.sin(theta)) ** 2 + ((L / 2) + r * np.cos(theta)) ** 2)))
     beta = np.rad2deg(beta)
     if not theta == 0:
@@ -144,7 +148,7 @@ def main():
     a = DoseRefPoint(3.1, 2.6, 0)
     list = []
     list.append(Source(0, 0, 0, 10))
-    b = a.computeDose(list)
+    b = a.computeDose(list, 10)
     print(b)
 
 
