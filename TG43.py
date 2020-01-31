@@ -33,6 +33,7 @@ class DoseRefPoint:
             DoseRate = source.aks * source.data.getDoseRateConst() * (G/G_0) * source.data.getRadialDoseConst(r) * source.data.getAnisotropyConst(r, np.rad2deg(theta)) *(1/.0001)
             Dose = DoseRate * time # Dose in cGy
             return Dose
+
 class DataTable:
     """Class used to hold Data from .xls files"""
     def __init__(self, loc):
@@ -99,52 +100,8 @@ def computeRadialDose(r, theta, L):
         G = 1/(r**2 - (L**2/4))
     return G
 
-def computeDose(source, dosepoint, treatment_time):
-
-    # Convert dosepoint to polar coordinates
-    x = dosepoint[0] - source.position[0] # dosepoint position relative to source
-    y = dosepoint[1] - source.position[1] # dosepoint position relatove to source
-    r = np.sqrt(x**2 + y**2) # dist in cm
-    theta = (np.arctan(y/x)) # angle in degrees
-    # theta = np.arctan2(y, x)
-    # theta = np.rad2deg(theta)
-    source.readAttributes()
-
-    L = source.activeLength
-
-    # L = .36 # Set to example active length (for testing)
-
-    beta = np.arcsin( (L * np.sin( np.arctan((r*np.sin(theta))/(r*np.cos(theta) - (L/2)))))/ (np.sqrt((r*np.sin(theta))**2 + ((L/2)+r*np.cos(theta))**2)) )
-    beta = np.rad2deg(beta)
-
-    # what if y = 0?
-    G_L = beta/(L*r)
-
-    G_L_0 = (2 * np.rad2deg(np.arctan(L/2)))/(L)
-
-    normalized_G_L = G_L / G_L_0
-
-    g_l = np.interp(r, source.g_l_np[:,0], source.g_l_np[:,1]) # Interpolate g_l for given r
-
-    F = source.f(r, np.rad2deg(theta))
-
-    DoseRate = source.aks * source.DR_Const * normalized_G_L * g_l * F /.0001 # Doserate in cGy/hr
-
-    treatment_time_hours = treatment_time/60
-
-    Dose = DoseRate * treatment_time_hours # Dose in cGy
-
-    return Dose
-
 def main():
 
-    # loc = '192ir-hdr-flexisource.xls'
-    # a = DataTable(loc)
-    # print(a.getAnisotropyConst(10, 10))
-    # print(a.getActiveLength())
-    # print(a.getRadialDoseConst(9))
-    #
-    # print(cartesian2Polar(1, 2, 0, in_degrees=True))
     a = DoseRefPoint(3.1, 2.6, 0)
     list = []
     list.append(Source(0, 0, 0, 10))
