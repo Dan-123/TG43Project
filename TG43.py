@@ -19,6 +19,7 @@ class DoseRefPoint:
 
     def computeDose(self, source_list, time):
         """Method to compute dose from a list of sources at this point"""
+        doselist = []
         time = time/60
         for source in source_list:
             xdist = np.abs(source.x - self.x)
@@ -32,7 +33,8 @@ class DoseRefPoint:
 
             DoseRate = source.aks * source.data.getDoseRateConst() * (G/G_0) * source.data.getRadialDoseConst(r) * source.data.getAnisotropyConst(r, np.rad2deg(theta)) *(1/.0001)
             Dose = DoseRate * time # Dose in cGy
-            return Dose
+            doselist.append(Dose)
+        return  doselist
 
 class DataTable:
     """Class used to hold Data from .xls files"""
@@ -105,9 +107,9 @@ def main():
     a = DoseRefPoint(3.1, 2.6, 0)
     list = []
     list.append(Source(0, 0, 0, 10))
-    b = a.computeDose(list, 10)
-    print(b)
-
+    list.append(Source(1, 0, 0, 10))
+    dose = a.computeDose(list, 10)
+    print(dose)
 
 if __name__ == "__main__":
     main()
