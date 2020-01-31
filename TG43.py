@@ -130,11 +130,19 @@ def runExample():
 
     return dose_list, sum_dose_list
 
+def runTest():
+
+    a = DoseRefPoint(3.1, 2.6, 0)
+    sourcelist = [Source(0, 0, 0, 10)]
+    return a.computeDose(sourcelist, 10)
 
 def main():
     results = runExample()
     for i in range(len(results[1])):
-        print("Total Dose: %d" % (results[1][i]))
+        print("Total Dose: {:.2f} cGy".format(results[1][i]))
+
+    # print(runTest())
+    print("Num of sources: {}".format(Source._numofsources))
 
 if __name__ == "__main__":
     main()
