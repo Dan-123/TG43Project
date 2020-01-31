@@ -16,6 +16,12 @@ class DoseRefPoint:
         self.z = z
         self.cartesian = [x, y, z]
 
+    def computeDose(self, source_list):
+        """Method to compute dose from a list of sources at this point"""
+        for source in source_list:
+            data = source.data
+            pass
+
 class DataTable:
     """Class used to hold Data from .xls files"""
     def __init__(self, loc):
@@ -40,39 +46,37 @@ class DataTable:
         f = interpolate.interp2d(r_vals, theta_vals, F_vals)  # 2D interpolate f(r, theta)
         return f(r, theta)
 
+    def getAlongAwayConst(self, along, away):
+        pd.read_excel(self.loc, skiprows=10, nrows=19, usecols="Q:AC", index_col=0)
 
 
 class Source:
     _numofsources = 0
 
-    def __init__(self, position, activity):
-        self.position = position # source [x, y] position
+    def __init__(self, x, y, z, activity):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.coordinates = [x, y, z]
         self.activity = activity # source activity in Ci
         self.type = 'IR-192' # source type
         self.aks = ((activity * 1000) / 0.243) * 0.0001 # Air Kerma strength
 
+        # May want to change for various sources
+        self.data = DataTable('192ir-hdr-flexisource.xls')
+
         Source._numofsources += 1
 
-    def readAttributes(self):
-
-        loc = '192ir-hdr-flexisource.xls'
-
-        WS = pd.read_excel(loc, header=None)
-        WS_np = np.array(WS)
-
-        self.DR_Const = WS_np[4, 2]
-        self.g_l = pd.read_excel(loc, skiprows=10, nrows=13, usecols="B:C", index_col=0)
-        self.g_l_np = np.array(WS_np[11:24, 1:3], dtype='f')
-        self.activeLength = WS_np[9, 2]
-        self.F = pd.read_excel(loc, skiprows=10, nrows=48, usecols="E:O", index_col=0)
-        # self.F_np[0,0] = 0
-        # self.F_np = self.F_np.astype(float)
-        r = self.F.columns
-        theta = self.F.index
-        F_vals = self.F.to_numpy()
-        self.f = interpolate.interp2d(r, theta, F_vals) # 2D interpolate f(r, theta)
-        self.along_away = pd.read_excel(loc, skiprows=10, nrows=19, usecols="Q:AC", index_col=0)
-
+def cartesian2Polar(x, y, z, in_degrees=False):
+    """Converts from cartesian to Polar"""
+    r = np.sqrt(x**2 + y**2 + z**2)
+    phi = np.arctan2(y, x)
+    theta = np.arccos(z/r)
+    if in_degrees:
+        r = np.rad2deg(r)
+        phi = np.rad2deg(phi)
+        theta = np.rad2deg(theta)
+    return [r, phi, theta]
 
 def computeDose(source, dosepoint, treatment_time):
 
@@ -111,42 +115,20 @@ def computeDose(source, dosepoint, treatment_time):
 
     return Dose
 
-def readFile():
-
-    loc = '192ir-hdr-flexisource.xls'
-
-
-    WS = pd.read_excel(loc, header=None)
-    WS_np = np.array(WS)
-
-    DR_Const = WS_np[4, 2]
-    g_l = pd.read_excel(loc, skiprows=10, nrows=13, usecols="B:C", index_col=0)
-    L = WS_np[9, 2]
-    F = pd.read_excel(loc, skiprows=10, nrows=48, usecols="E:O", index_col=0)
-    along_away = pd.read_excel(loc, skiprows=10, nrows=19, usecols="Q:AC", index_col=0)
-    return DR_Const, g_l, L, F, along_away
-
-
 def main():
-    # source1 = Source([0, 0], 10)
-    # source2 = Source([0, 2], 10)
-    # source3 = Source([0, -2], 10)
-    # source4 = Source([3, 1], 10)
-    # source5 = Source([3, -1], 10)
-    # sourcelist = []
-    # doselist = []
-    # sourcelist.append(source1)
-    # sourcelist.append(source2)
-    # doselist.append(computeDose(source1, [3.1, 2.6], 10))
-    # doselist.append(computeDose(source2, [-2.0, 0], 10))
-    # doselist.append(computeDose(source3, [-2.0, 0], 10))
-    # doselist.append(computeDose(source4, [-2.0, 0], 10))
-    # doselist.append(computeDose(source5, [-2.0, 0], 10))
+
+    # loc = '192ir-hdr-flexisource.xls'
+    # a = DataTable(loc)
+    # print(a.getAnisotropyConst(10, 10))
+    # print(a.getActiveLength())
+    # print(a.getRadialDoseConst(9))
     #
-    # print(doselist)
-    loc = '192ir-hdr-flexisource.xls'
-    a = DataTable(loc)
-    print(a.getAnisotropyConst(1, 180))
+    # print(cartesian2Polar(1, 2, 0, in_degrees=True))
+    a = DoseRefPoint(0, 0, 0)
+    list = []
+    list.append(Source(0, 0, 0, 10))
+    b = a.computeDose(list)
+    print(b)
 
 
 if __name__ == "__main__":
