@@ -33,8 +33,8 @@ class DoseRefPoint:
 
             DoseRate = source.aks * source.data.getDoseRateConst() * (G/G_0) * source.data.getRadialDoseConst(r) * source.data.getAnisotropyConst(r, np.rad2deg(theta)) *(1/.0001)
             Dose = DoseRate * time # Dose in cGy
-            doselist.append(Dose)
-        return  doselist
+            doselist.append(float(Dose))
+        return doselist
 
 class DataTable:
     """Class used to hold Data from .xls files"""
@@ -104,10 +104,13 @@ def computeRadialDose(r, theta, L):
 
 def main():
 
-    a = DoseRefPoint(3.1, 2.6, 0)
+    a = DoseRefPoint(-2.0, 0, 0)
     list = []
     list.append(Source(0, 0, 0, 10))
-    list.append(Source(1, 0, 0, 10))
+    list.append(Source(0, 2, 0, 10))
+    list.append(Source(0, -2, 0, 10))
+    list.append(Source(3, 1, 0, 10))
+    list.append(Source(3, -1, 0, 10))
     dose = a.computeDose(list, 10)
     print(dose)
 
