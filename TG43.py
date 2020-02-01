@@ -44,7 +44,8 @@ class DoseRefPoint:
             # Calculate dose rate
             DoseRate = source.aks \
                        * source.data.getDoseRateConst() \
-                       * (G / G_0) * source.data.getRadialDoseConst(r) \
+                       * (G / G_0) \
+                       * source.data.getRadialDoseConst(r) \
                        * source.data.getAnisotropyConst(r, np.rad2deg(theta)) \
                        * (1 / .0001)
             Dose = DoseRate * time  # Dose in cGy
