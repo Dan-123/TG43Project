@@ -140,8 +140,8 @@ class Source:
         self.y = y
         self.z = z
         self.coordinates = [x, y, z]
-        self.activity = activity  # source activity in Ci
-        self.type = 'IR-192'  # source type
+        self.activity = activity                         # source activity in Ci
+        self.type = 'IR-192'                             # source type
         self.aks = ((activity * 1000) / 0.243) * 0.0001  # Air Kerma strength
 
         # May want to change for various sources
@@ -212,7 +212,6 @@ def runExample():
 
     dose_list = [dose_a, dose_b, dose_c, dose_d, dose_e]
     sum_dose_list = [np.sum(dose_a), np.sum(dose_b), np.sum(dose_c), np.sum(dose_d), np.sum(dose_e)]
-
     return dose_list, sum_dose_list
 
 
