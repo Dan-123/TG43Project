@@ -112,18 +112,18 @@ class DataTable:
     def getAlongAwayConst(self, along, away):
         """
         TODO Gets along and away constant
-        Cuttently have an issue with pd.read_excel.
+        Currently have an issue with pd.read_excel.
         some table values come in with an extra decimal point
         so it imports as a string
-        :param along:
-        :param away:
-        :return:
+        :param along: Distance from centerline of source (in cm)
+        :param away: Distance from source (in cm)
+        :return: Along and away constant
         """
         table = pd.read_excel(self.loc,
-                      skiprows=10,
-                      nrows=19,
-                      usecols="Q:AC",
-                      index_col=0)
+                              skiprows=10,
+                              nrows=19,
+                              usecols="Q:AC",
+                              index_col=0)
         away_vals = table.columns
         along_vals = table.index
         along_away = table.to_numpy()
