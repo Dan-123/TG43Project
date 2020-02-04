@@ -27,9 +27,9 @@ class DoseRefPoint:
         :param time: Time of irradiation in minutes
         :return: A list of dose values for given sources after given time
         """
-        doselist = []  # Initialize list to contain dose values
-        time = time / 60  # Convert from minutes to hours
-        for source in source_list:  # Iterate through a list of len(source_list) sources
+        doselist = []                          # Initialize list to contain dose values
+        time = time / 60                       # Convert from minutes to hours
+        for source in source_list:             # Iterate through a list of len(source_list) sources
             xdist = np.abs(source.x - self.x)  # Compute x, y, z distance from reference point to source
             ydist = np.abs(source.y - self.y)
             zdist = np.abs(source.z - self.z)
@@ -37,8 +37,8 @@ class DoseRefPoint:
                                             ydist,
                                             zdist)
 
-            L = source.data.getActiveLength()  # Source active length
-            G = computeRadialDose(r, theta, L)  # Radial dose factor
+            L = source.data.getActiveLength()              # Source active length
+            G = computeRadialDose(r, theta, L)             # Radial dose factor
             G_0 = computeRadialDose(1, np.deg2rad(90), L)  # Normalized radial dose factor
 
             # Calculate dose rate
@@ -48,7 +48,7 @@ class DoseRefPoint:
                        * source.data.getRadialDoseConst(r) \
                        * source.data.getAnisotropyConst(r, np.rad2deg(theta)) \
                        * (1 / .0001)
-            Dose = DoseRate * time  # Dose in cGy
+            Dose = DoseRate * time        # Dose in cGy
             doselist.append(float(Dose))  # Append dose to doselist
         return doselist
 
