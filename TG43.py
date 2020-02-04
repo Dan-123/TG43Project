@@ -54,7 +54,8 @@ class DoseRefPoint:
 
 
 class DataTable:
-    """Class used to hold data from .xls files
+    """
+    Class used to hold data from .xls files
     """
     def __init__(self, loc):
         """
@@ -206,18 +207,18 @@ def runExample():
     c = DoseRefPoint(1.5, 3, 0)
     d = DoseRefPoint(1.5, -4, 0)
     e = DoseRefPoint(4, 0, 0)
-    list = []
-    list.append(Source(0, 0, 0, 10))
-    list.append(Source(0, 2, 0, 10))
-    list.append(Source(0, -2, 0, 10))
-    list.append(Source(3, 1, 0, 10))
-    list.append(Source(3, -1, 0, 10))
 
-    dose_a = a.computeDose(list, 10)
-    dose_b = b.computeDose(list, 10)
-    dose_c = c.computeDose(list, 10)
-    dose_d = d.computeDose(list, 10)
-    dose_e = e.computeDose(list, 10)
+    source_list = [Source(0, 0, 0, 10),
+                   Source(0, 2, 0, 10),
+                   Source(0, -2, 0, 10),
+                   Source(3, 1, 0, 10),
+                   Source(3, -1, 0, 10)]
+
+    dose_a = a.computeDose(source_list, 10)
+    dose_b = b.computeDose(source_list, 10)
+    dose_c = c.computeDose(source_list, 10)
+    dose_d = d.computeDose(source_list, 10)
+    dose_e = e.computeDose(source_list, 10)
 
     dose_list = [dose_a,
                  dose_b,
