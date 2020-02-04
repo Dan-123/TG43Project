@@ -112,15 +112,23 @@ class DataTable:
     def getAlongAwayConst(self, along, away):
         """
         TODO Gets along and away constant
+        Cuttently have an issue with pd.read_excel.
+        some table values come in with an extra decimal point
+        so it imports as a string
         :param along:
         :param away:
         :return:
         """
-        pd.read_excel(self.loc,
+        table = pd.read_excel(self.loc,
                       skiprows=10,
                       nrows=19,
                       usecols="Q:AC",
                       index_col=0)
+        away_vals = table.columns
+        along_vals = table.index
+        along_away = table.to_numpy()
+        f = interpolate.interp2d(away_vals, along_vals, along_away)
+        return f(along, away)
 
 
 class Source:
@@ -211,8 +219,17 @@ def runExample():
     dose_d = d.computeDose(list, 10)
     dose_e = e.computeDose(list, 10)
 
-    dose_list = [dose_a, dose_b, dose_c, dose_d, dose_e]
-    sum_dose_list = [np.sum(dose_a), np.sum(dose_b), np.sum(dose_c), np.sum(dose_d), np.sum(dose_e)]
+    dose_list = [dose_a,
+                 dose_b,
+                 dose_c,
+                 dose_d,
+                 dose_e]
+
+    sum_dose_list = [np.sum(dose_a),
+                     np.sum(dose_b),
+                     np.sum(dose_c),
+                     np.sum(dose_d),
+                     np.sum(dose_e)]
     return dose_list, sum_dose_list
 
 
@@ -228,8 +245,7 @@ def main():
         print(f'Total Dose: {results[1][i]:.2f} cGy')
 
     # print(runTest())
-    print(f'Num of sources: {Source._numofsources}')
-
+    # print(f'Num of sources: {Source._numofsources}')
 
 if __name__ == "__main__":
     main()
