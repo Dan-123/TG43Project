@@ -114,8 +114,8 @@ class DataTable:
         """
         TODO Gets along and away constant
         Currently have an issue with pd.read_excel.
-        some table values come in with an extra decimal point
-        so it imports as a string
+        some table values (columns) come in with an extra decimal point
+        so it imports as a string. I hardcoded it here
         :param along: Distance from centerline of source (in cm)
         :param away: Distance from source (in cm)
         :return: Along and away constant
@@ -125,10 +125,11 @@ class DataTable:
                               nrows=19,
                               usecols="Q:AC",
                               index_col=0)
-        away_vals = table.columns
+        # away_vals = table.columns
+        away_vals = [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5, 6, 7]
         along_vals = table.index
         along_away = table.to_numpy()
-        f = interpolate.interp2d(away_vals, along_vals, along_away)
+        f = interpolate.interp2d(along_vals, away_vals, along_away.T)
         return f(along, away)
 
 
@@ -231,6 +232,7 @@ def runExample():
                      np.sum(dose_c),
                      np.sum(dose_d),
                      np.sum(dose_e)]
+
     return dose_list, sum_dose_list
 
 
@@ -241,12 +243,13 @@ def runTest():
 
 
 def main():
-    results = runExample()
-    for i in range(len(results[1])):
-        print(f'Total Dose: {results[1][i]:.2f} cGy')
+    # results = runExample()
+    # for i in range(len(results[1])):
+    #     print(f'Total Dose: {results[1][i]:.2f} cGy')
 
-    # print(runTest())
-    # print(f'Num of sources: {Source._numofsources}')
+    print(runTest())
+    print(f'Num of sources: {Source._numofsources}')
+
 
 if __name__ == "__main__":
     main()
