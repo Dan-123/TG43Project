@@ -295,7 +295,7 @@ class Ui_Dialog(object):
         self.delete_source.clicked.connect(self.source_tree.clear)
         self.add_dose_point.clicked.connect(self.addRefPoint)
         self.add_source.clicked.connect(self.addSource)
-        # self.close_all.clicked.connect(lambda: print("x"))
+        self.close_all.clicked.connect(QtWidgets.qApp.quit)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.dose_ref_x, self.dose_ref_y)
         Dialog.setTabOrder(self.dose_ref_y, self.dose_ref_z)
@@ -349,6 +349,4 @@ class Ui_Dialog(object):
         self.source_tree.setSortingEnabled(__sortingEnabled)
         self.delete_source.setText(_translate("Dialog", "Delete Source"))
 
-    def close_window(self):
-        self.w = CloseWindow()
 
