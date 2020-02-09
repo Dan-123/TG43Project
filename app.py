@@ -12,18 +12,6 @@ class AppWindow(QDialog):
         self.show()
 
 
-    def create_dose_ref_point(self):
-        x = self.ui.dose_ref_x
-        y = self.ui.dose_ref_y
-        z = self.ui.dose_ref_z
-
-    def button_pressed(self):
-        if self.ui.add_dose_point.clicked:
-            print('clicked')
-
-
-
-
 
 
 app = QApplication(sys.argv)
