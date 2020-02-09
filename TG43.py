@@ -137,7 +137,7 @@ class Source:
     """
     Class used to store data pertaining to specific brachytherapy source
     """
-    _numofsources = 0 # Number of sources counter
+    _numofsources = 0  # Number of sources counter
 
     def __init__(self, x, y, z, activity):
         """
@@ -243,12 +243,12 @@ def runTest():
 
 
 def main():
-    # results = runExample()
-    # for i in range(len(results[1])):
-    #     print(f'Total Dose: {results[1][i]:.2f} cGy')
+    results = runExample()
+    for i in range(len(results[1])):
+        print(f'Total Dose: {results[1][i]:.2f} cGy')
 
-    print(runTest())
-    print(f'Num of sources: {Source._numofsources}')
+    # print(runTest())
+    # print(f'Num of sources: {Source._numofsources}')
 
 
 if __name__ == "__main__":
