@@ -23,7 +23,7 @@ class DoseRefPoint:
     def computeDose(self, source_list, time):
         """
         Method to compute dose from a list of sources at this point
-        :param source_list: A list of Source() objects
+        :param source_list: A list of Source objects
         :param time: Time of irradiation in minutes
         :return: A list of dose values for given sources after given time
         """
@@ -94,10 +94,10 @@ class DataTable:
 
     def getAnisotropyConst(self, r, theta):
         """
-        Gets anisotropy constant at distance 'r' and angle 'theta'
+        Gets anisotropy constant at distance r and angle theta
         :param r: Distance from source (in cm)
         :param theta: Angle from source's transverse plane (in radians)
-        :return: Anisotrpy constant at distance 'r' and angle 'theta'
+        :return: Anisotropy constant at distance r and angle theta
         """
         table = pd.read_excel(self.loc,
                               skiprows=10,
@@ -172,7 +172,7 @@ def cartesian2Polar(x, y, z, in_degrees=False):
     :param y: y position
     :param z: z position
     :param in_degrees: False for return type in radians, True for degrees
-    :return: List of polar coordinates transformation of input [r, phi, theta]
+    :return: List of polar coordinates transformation of input r, phi, theta
     """
     r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
     theta = np.arctan2(y, x)
@@ -181,7 +181,7 @@ def cartesian2Polar(x, y, z, in_degrees=False):
         r = np.rad2deg(r)
         phi = np.rad2deg(phi)
         theta = np.rad2deg(theta)
-    return [r, phi, theta]
+    return r, phi, theta
 
 
 def computeRadialDose(r, theta, L):
