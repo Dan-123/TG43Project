@@ -10,6 +10,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import TG43
 
 class Ui_Dialog(object):
+
+    source_list = []
+    reference_point_list = []
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(992, 728)
@@ -307,6 +311,7 @@ class Ui_Dialog(object):
                   self.source_z.value()
         activity = self.source_activity.value()
         source = TG43.Source(x, y, z, activity)
+        self.source_list.append(source)
         print(source.coordinates)
         print(source.activity)
         print('Source Added')
@@ -317,6 +322,7 @@ class Ui_Dialog(object):
                   round(self.dose_ref_y.value(), 1),\
                   round(self.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
+        self.reference_point_list.append(ref)
         self.source_tree.topLevelItem(0).setText(0, _translate("Dialog", str(1)))
         self.source_tree.topLevelItem(0).setText(1, _translate("Dialog", str(x)))
         self.source_tree.topLevelItem(0).setText(2, _translate("Dialog", str(y)))
