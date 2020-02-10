@@ -9,11 +9,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import TG43
 
-class CloseWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Close")
-
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -307,7 +302,9 @@ class Ui_Dialog(object):
         Dialog.setTabOrder(self.source_z, self.source_tree)
 
     def addSource(self):
-        x, y, z = self.source_x.value(), self.source_y.value(), self.source_z.value()
+        x, y, z = self.source_x.value(),\
+                  self.source_y.value(),\
+                  self.source_z.value()
         activity = self.source_activity.value()
         source = TG43.Source(x, y, z, activity)
         print(source.coordinates)
@@ -315,19 +312,27 @@ class Ui_Dialog(object):
         print('Source Added')
 
     def addRefPoint(self):
-        x, y, z = self.dose_ref_x.value(), self.dose_ref_y.value(), self.dose_ref_z.value()
+        _translate = QtCore.QCoreApplication.translate
+        x, y, z = round(self.dose_ref_x.value(), 1),\
+                  round(self.dose_ref_y.value(), 1),\
+                  round(self.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
+        self.source_tree.topLevelItem(0).setText(0, _translate("Dialog", str(1)))
+        self.source_tree.topLevelItem(0).setText(1, _translate("Dialog", str(x)))
+        self.source_tree.topLevelItem(0).setText(2, _translate("Dialog", str(y)))
+        self.source_tree.topLevelItem(0).setText(3, _translate("Dialog", str(z)))
+        self.source_tree.topLevelItem(0).setText(4, _translate("Dialog", "Dose"))
         print(ref.cartesian)
         print('Reference Point Added')
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "TG43 Calculator"))
         self.groupBox.setTitle(_translate("Dialog", "Add Dose Reference Point"))
         self.label_3.setText(_translate("Dialog", "X (cm)"))
         self.label.setText(_translate("Dialog", "Y (cm)"))
         self.label_2.setText(_translate("Dialog", "Z (cm)"))
-        self.groupBox_2.setTitle(_translate("Dialog", "Add Brachy Source"))
+        self.groupBox_2.setTitle(_translate("Dialog", "Add Brachytherapy Source"))
         self.label_8.setText(_translate("Dialog", "Y (cm)"))
         self.label_10.setText(_translate("Dialog", "Source Activity (Ci)"))
         self.label_7.setText(_translate("Dialog", "X (cm)"))
