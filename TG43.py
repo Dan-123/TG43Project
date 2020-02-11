@@ -10,7 +10,7 @@ class DoseRefPoint:
 
     def __init__(self, x, y, z):
         """
-        Constructor fo the DoseRefPoint class
+        Constructor for the DoseRefPoint class
         :param x: x position of the dose reference point (in cm)
         :param y: y position of the dose reference point (in cm)
         :param z: z position of the dose reference point (in cm)
