@@ -25,6 +25,7 @@ class AppWindow(QDialog):
                   round(self.ui.source_z.value(), 1)
         activity = round(self.ui.source_activity.value(), 1)
         source = TG43.Source(x, y, z, activity)
+        self.source_list.append(source)
         row_pos = self.ui.source_table.rowCount()
         self.ui.source_table.insertRow(row_pos)
         self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type)))
@@ -39,6 +40,7 @@ class AppWindow(QDialog):
                   round(self.ui.dose_ref_y.value(), 1),\
                   round(self.ui.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
+        self.refpoint_list.append(ref)
         self.refpoint_list.append(ref)
         row_pos = self.ui.refpoint_table.rowCount()
         self.ui.refpoint_table.insertRow(row_pos)
