@@ -20,14 +20,18 @@ class AppWindow(QDialog):
 
     def addSource(self):
 
-        x, y, z = self.ui.source_x.value(),\
-                  self.ui.source_y.value(),\
-                  self.ui.source_z.value()
-        activity = self.ui.source_activity.value()
+        x, y, z = round(self.ui.source_x.value(), 1),\
+                  round(self.ui.source_y.value(), 1),\
+                  round(self.ui.source_z.value(), 1)
+        activity = round(self.ui.source_activity.value(), 1)
         source = TG43.Source(x, y, z, activity)
-        print(source.coordinates)
-        print(source.activity)
-        print('Source Added')
+        row_pos = self.ui.source_table.rowCount()
+        self.ui.source_table.insertRow(row_pos)
+        self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type)))
+        self.ui.source_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(x)))
+        self.ui.source_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(y)))
+        self.ui.source_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(z)))
+        self.ui.source_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(activity)))
 
     def addRefPoint(self):
         _translate = QtCore.QCoreApplication.translate
@@ -41,8 +45,7 @@ class AppWindow(QDialog):
         self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(x)))
         self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(z)))
-        print(ref.cartesian)
-        print('Reference Point Added')
+
 
     def clearRefPoint(self):
         pass
