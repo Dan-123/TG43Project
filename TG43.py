@@ -169,7 +169,7 @@ class Source:
     """
     _numofsources = 0  # Number of sources counter
 
-    def __init__(self, x, y, z, activity, time):
+    def __init__(self, x, y, z, activity, time, type='IR-192'):
         """
         Constructor for the Source class
         :param x: x position of source (in cm)
@@ -183,8 +183,8 @@ class Source:
         self.z = z
         self.coordinates = [x, y, z]
         self.activity = activity                         # source activity in Ci
-        self.time = time                                 # Source time in minutes
-        self.type = 'IR-192'                             # source type
+        self.time = time                                 # source time in minutes
+        self.type = type                                 # source type
         self.aks = ((activity * 1000) / 0.243) * 0.0001  # Air Kerma strength
 
         # May want to change for various sources
