@@ -23,6 +23,7 @@ class DoseRefPoint:
     def computeDose(self, source_list):
         """
         Method to compute dose from a list of sources at this point
+        using TG-43 Formalism
         :param source_list: A list of Source objects
         :return: A list of dose values for given sources after given time
         """
@@ -49,6 +50,37 @@ class DoseRefPoint:
                        * (1 / .0001)
             Dose = DoseRate * time        # Dose in cGy
             doselist.append(float(Dose))  # Append dose to doselist
+        return doselist
+
+    def computeMeisbergerRatio(self, source_list):
+        """
+        Method to compute dose from a list of sources at this point
+        using Meisberger Ratio
+        :param source_list: A list of Source objects
+        :return: A list of dose values for given sources after given time
+        """
+
+        doselist = []
+        for source in source_list:
+            xdist = np.abs(source.x - self.x)
+            ydist = np.abs(source.y - self.y)
+            zdist = np.abs(source.z - self.z)
+            time = source.time / 60
+            A, B, C, D = 1.0128, 0.005019, -0.001178, -0.00002008
+            r, phi, theta = cartesian2Polar(xdist,
+                                            ydist,
+                                            zdist)
+            f_med = 0.96
+            gamma = 4.69
+            Activity = source.activity * 1000 # Ci to mCi
+            T = A\
+                + (B*r)\
+                + (C*(r**2))\
+                + (D*(r**3))
+
+            DoseRate = (f_med * Activity * gamma * T)/(r ** 2)
+            Dose = DoseRate * time
+            doselist.append(float(Dose))
         return doselist
 
 
@@ -240,16 +272,17 @@ def runExample():
 def runTest():
     a = DoseRefPoint(3.1, 2.6, 0)
     sourcelist = [Source(0, 0, 0, 10, 10)]
-    return a.computeDose(sourcelist)
+    return a.computeMeisbergerRatio(sourcelist)
 
 
 def main():
-    results = runExample()
-    for i in range(len(results[1])):
-        print(f'Total Dose: {results[1][i]:.2f} cGy')
+    # results = runExample()
+    # for i in range(len(results[1])):
+    #     print(f'Total Dose: {results[1][i]:.2f} cGy')
 
-    # print(runTest())
+    print(runTest())
     print(f'Num of sources: {Source._numofsources}')
+
 
 
 if __name__ == "__main__":
