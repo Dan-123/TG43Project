@@ -20,19 +20,18 @@ class DoseRefPoint:
         self.z = z
         self.cartesian = [x, y, z]
 
-    def computeDose(self, source_list, time):
+    def computeDose(self, source_list):
         """
         Method to compute dose from a list of sources at this point
         :param source_list: A list of Source objects
-        :param time: Time of irradiation in minutes
         :return: A list of dose values for given sources after given time
         """
         doselist = []                          # Initialize list to contain dose values
-        time = time / 60                       # Convert from minutes to hours
         for source in source_list:             # Iterate through a list of len(source_list) sources
             xdist = np.abs(source.x - self.x)  # Compute x, y, z distance from reference point to source
             ydist = np.abs(source.y - self.y)
             zdist = np.abs(source.z - self.z)
+            time = source.time / 60            # Time of source irradiation (converted to hours)
             r, phi, theta = cartesian2Polar(xdist,  # Call cartesian2polar to convert to polar
                                             ydist,
                                             zdist)
@@ -139,19 +138,21 @@ class Source:
     """
     _numofsources = 0  # Number of sources counter
 
-    def __init__(self, x, y, z, activity):
+    def __init__(self, x, y, z, activity, time):
         """
         Constructor for the Source class
         :param x: x position of source (in cm)
         :param y: y position of source (in cm)
         :param z: z position of source (in cm)
         :param activity: Activity of source (in Ci)
+        :param time: Time of source irradiation (in minutes)
         """
         self.x = x
         self.y = y
         self.z = z
         self.coordinates = [x, y, z]
         self.activity = activity                         # source activity in Ci
+        self.time = time                                 # Source time in minutes
         self.type = 'IR-192'                             # source type
         self.aks = ((activity * 1000) / 0.243) * 0.0001  # Air Kerma strength
 
@@ -209,17 +210,17 @@ def runExample():
     d = DoseRefPoint(1.5, -4, 0)
     e = DoseRefPoint(4, 0, 0)
 
-    source_list = [Source(0, 0, 0, 10),
-                   Source(0, 2, 0, 10),
-                   Source(0, -2, 0, 10),
-                   Source(3, 1, 0, 10),
-                   Source(3, -1, 0, 10)]
+    source_list = [Source(0, 0, 0, 10, 10),
+                   Source(0, 2, 0, 10, 10),
+                   Source(0, -2, 0, 10, 10),
+                   Source(3, 1, 0, 10, 10),
+                   Source(3, -1, 0, 10, 10)]
 
-    dose_a = a.computeDose(source_list, 10)
-    dose_b = b.computeDose(source_list, 10)
-    dose_c = c.computeDose(source_list, 10)
-    dose_d = d.computeDose(source_list, 10)
-    dose_e = e.computeDose(source_list, 10)
+    dose_a = a.computeDose(source_list)
+    dose_b = b.computeDose(source_list)
+    dose_c = c.computeDose(source_list)
+    dose_d = d.computeDose(source_list)
+    dose_e = e.computeDose(source_list)
 
     dose_list = [dose_a,
                  dose_b,
@@ -238,8 +239,8 @@ def runExample():
 
 def runTest():
     a = DoseRefPoint(3.1, 2.6, 0)
-    sourcelist = [Source(0, 0, 0, 10)]
-    return a.computeDose(sourcelist, 10)
+    sourcelist = [Source(0, 0, 0, 10, 10)]
+    return a.computeDose(sourcelist)
 
 
 def main():
@@ -248,7 +249,7 @@ def main():
         print(f'Total Dose: {results[1][i]:.2f} cGy')
 
     # print(runTest())
-    # print(f'Num of sources: {Source._numofsources}')
+    print(f'Num of sources: {Source._numofsources}')
 
 
 if __name__ == "__main__":

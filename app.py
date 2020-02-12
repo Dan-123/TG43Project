@@ -40,6 +40,7 @@ class AppWindow(QDialog):
                   round(self.ui.dose_ref_y.value(), 1),\
                   round(self.ui.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
+        # dose = ref.computeDose(self.source_list)
         self.refpoint_list.append(ref)
         self.refpoint_list.append(ref)
         row_pos = self.ui.refpoint_table.rowCount()
@@ -47,6 +48,15 @@ class AppWindow(QDialog):
         self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(x)))
         self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(z)))
+        # self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(dose)))
+
+    def runExample(self):
+        """
+        Function used to run example for project
+        TODO will need to clear table and create sources/ref points at predefined locations
+        """
+        self.ui.refpoint_table.clear()
+        self.ui.source_table.clear()
 
 
     def clearRefPoint(self):
