@@ -134,10 +134,10 @@ class DataTable:
                               nrows=48,
                               usecols="E:O",
                               index_col=0)
-        r_vals = table.columns
-        theta_vals = table.index
-        F_vals = table.to_numpy()
-        f = interpolate.interp2d(r_vals, theta_vals, F_vals)  # 2D interpolate f(r, theta)
+
+        f = interpolate.interp2d(table.columns,
+                                 table.index,
+                                 table.to_numpy())  # 2D interpolate f(r, theta)
         return f(r, theta)
 
     def getAlongAwayConst(self, along, away):
@@ -271,16 +271,16 @@ def runExample():
 def runTest():
     a = DoseRefPoint(3.1, 2.6, 0)
     sourcelist = [Source(0, 0, 0, 10, 10)]
-    return a.computeMeisbergerRatio(sourcelist)
+    return a.computeDose(sourcelist)
 
 
 def main():
-    # results = runExample()
-    # for i in range(len(results[1])):
-    #     print(f'Total Dose: {results[1][i]:.2f} cGy')
+    results = runExample()
+    for i in range(len(results[1])):
+        print(f'Total Dose: {results[1][i]:.2f} cGy')
 
-    print(runTest())
-    print(f'Num of sources: {Source._numofsources}')
+    # print(runTest())
+    # print(f'Num of sources: {Source._numofsources}')
 
 
 
