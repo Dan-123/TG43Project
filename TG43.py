@@ -59,28 +59,27 @@ class DoseRefPoint:
         :param source_list: A list of Source objects
         :return: A list of dose values for given sources after given time
         """
-
-        doselist = []
-        for source in source_list:
-            xdist = np.abs(source.x - self.x)
+        doselist = []                           # Initialize list to contain dose values
+        for source in source_list:              # Iterate through a list of len(source_list) sources
+            xdist = np.abs(source.x - self.x)   # Compute x, y, z distance from reference point to source
             ydist = np.abs(source.y - self.y)
             zdist = np.abs(source.z - self.z)
-            time = source.time / 60
-            A, B, C, D = 1.0128, 0.005019, -0.001178, -0.00002008
-            r, phi, theta = cartesian2Polar(xdist,
+            time = source.time / 60                                 # Time of source irradiation (converted to hours)
+            A, B, C, D = 1.0128, 0.005019, -0.001178, -0.00002008   # Meisberger Constants
+            r, phi, theta = cartesian2Polar(xdist,                  # Call cartesian2polar to convert to polar
                                             ydist,
                                             zdist)
             f_med = 0.96
             gamma = 4.69
-            Activity = source.activity * 1000 # Ci to mCi
+            Activity = source.activity * 1000                       # Source activity (Ci to mCi)
             T = A\
                 + (B*r)\
                 + (C*(r**2))\
                 + (D*(r**3))
 
             DoseRate = (f_med * Activity * gamma * T)/(r ** 2)
-            Dose = DoseRate * time
-            doselist.append(float(Dose))
+            Dose = DoseRate * time          # Dose in cGy
+            doselist.append(float(Dose))    # Append dose to doselist
         return doselist
 
 
