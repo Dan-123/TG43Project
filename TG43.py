@@ -227,7 +227,7 @@ def computeRadialDose(r, theta, L):
     beta = np.arcsin((L * np.sin(np.arctan2((r * np.sin(theta)), (r * np.cos(theta) - (L / 2))))) / (
         np.sqrt((r * np.sin(theta)) ** 2 + ((L / 2) + r * np.cos(theta)) ** 2)))
     beta = np.rad2deg(beta)
-    if theta != 0:
+    if theta != 0 or theta == np.pi:
         G = beta / (L * r * np.sin(theta))
     else:
         G = 1 / (r ** 2 - (L ** 2 / 4))
