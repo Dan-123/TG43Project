@@ -1,9 +1,10 @@
 import sys
+import numpy as np
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
-from TG43_GUI_v1_2 import Ui_Dialog
+from TG43_GUI_v1_3 import Ui_Dialog
 import TG43
 
 class AppWindow(QDialog):
@@ -24,7 +25,8 @@ class AppWindow(QDialog):
                   round(self.ui.source_y.value(), 1),\
                   round(self.ui.source_z.value(), 1)
         activity = round(self.ui.source_activity.value(), 1)
-        source = TG43.Source(x, y, z, activity)
+        time = round(self.ui.source_time.value(), 1)
+        source = TG43.Source(x, y, z, activity, time)
         self.source_list.append(source)
         row_pos = self.ui.source_table.rowCount()
         self.ui.source_table.insertRow(row_pos)
@@ -33,6 +35,7 @@ class AppWindow(QDialog):
         self.ui.source_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.source_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(z)))
         self.ui.source_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(activity)))
+        self.ui.source_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(time)))
 
     def addRefPoint(self):
         _translate = QtCore.QCoreApplication.translate
@@ -40,7 +43,7 @@ class AppWindow(QDialog):
                   round(self.ui.dose_ref_y.value(), 1),\
                   round(self.ui.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
-        # dose = ref.computeDose(self.source_list)
+        dose = ref.computeDose(self.source_list)
         self.refpoint_list.append(ref)
         self.refpoint_list.append(ref)
         row_pos = self.ui.refpoint_table.rowCount()
@@ -48,7 +51,7 @@ class AppWindow(QDialog):
         self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(x)))
         self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(z)))
-        # self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(dose)))
+        self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(round(np.sum(dose), 2))))
 
     def runExample(self):
         """

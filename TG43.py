@@ -253,6 +253,13 @@ def runExample():
     dose_d = d.computeDose(source_list)
     dose_e = e.computeDose(source_list)
 
+    # dose_a = a.computeMeisbergerRatio(source_list)
+    # dose_b = b.computeMeisbergerRatio(source_list)
+    # dose_c = c.computeMeisbergerRatio(source_list)
+    # dose_d = d.computeMeisbergerRatio(source_list)
+    # dose_e = e.computeMeisbergerRatio(source_list)
+
+
     dose_list = [dose_a,
                  dose_b,
                  dose_c,
@@ -271,7 +278,7 @@ def runExample():
 def runTest():
     a = DoseRefPoint(3.1, 2.6, 0)
     sourcelist = [Source(0, 0, 0, 10, 10)]
-    return a.computeDose(sourcelist)
+    return a.computeMeisbergerRatio(sourcelist)
 
 
 def main():
@@ -279,8 +286,8 @@ def main():
     for i in range(len(results[1])):
         print(f'Total Dose: {results[1][i]:.2f} cGy')
 
-    # print(runTest())
-    # print(f'Num of sources: {Source._numofsources}')
+    print(runTest())
+    print(f'Num of sources: {Source._numofsources}')
 
 
 
