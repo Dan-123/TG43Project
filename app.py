@@ -67,9 +67,38 @@ class AppWindow(QDialog):
         """
         self.ui.refpoint_table.setRowCount(0)
         self.ui.source_table.setRowCount(0)
-        self.source_list = []
+        self.source_list = [TG43.Source(0, 0, 0, 10, 10),
+                            TG43.Source(0, 2, 0, 10, 10),
+                            TG43.Source(0, -2, 0, 10, 10),
+                            TG43.Source(3, 1, 0, 10, 10),
+                            TG43.Source(3, -1, 0, 10, 10)]
+        row_pos = 0
+        for source in self.source_list:
+            self.ui.source_table.insertRow(row_pos)
+            self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type)))
+            self.ui.source_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(source.x)))
+            self.ui.source_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(source.y)))
+            self.ui.source_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(source.z)))
+            self.ui.source_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(source.activity)))
+            self.ui.source_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(source.time)))
+            row_pos += 1
+
         self.refpoint_list = []
 
+        self.refpoint_list = [TG43.DoseRefPoint(-2.0, 0, 0),
+                              TG43.DoseRefPoint(1.5, 0, 0),
+                              TG43.DoseRefPoint(1.5, 3, 0),
+                              TG43.DoseRefPoint(1.5, 4, 0),
+                              TG43.DoseRefPoint(4, 0, 0)]
+
+        row_pos = 0
+        for refpoint in self.refpoint_list:
+            self.ui.refpoint_table.insertRow(row_pos)
+            self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(refpoint.x)))
+            self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(refpoint.y)))
+            self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(refpoint.z)))
+            self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(round(np.sum(refpoint.computeDose(self.source_list)), 2))))
+            row_pos += 1
 
 
     def clearRefPoint(self):

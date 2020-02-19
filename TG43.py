@@ -247,17 +247,17 @@ def runExample():
                    Source(3, 1, 0, 10, 10),
                    Source(3, -1, 0, 10, 10)]
 
-    dose_a = a.computeDose(source_list)
-    dose_b = b.computeDose(source_list)
-    dose_c = c.computeDose(source_list)
-    dose_d = d.computeDose(source_list)
-    dose_e = e.computeDose(source_list)
+    # dose_a = a.computeDose(source_list)
+    # dose_b = b.computeDose(source_list)
+    # dose_c = c.computeDose(source_list)
+    # dose_d = d.computeDose(source_list)
+    # dose_e = e.computeDose(source_list)
 
-    # dose_a = a.computeMeisbergerRatio(source_list)
-    # dose_b = b.computeMeisbergerRatio(source_list)
-    # dose_c = c.computeMeisbergerRatio(source_list)
-    # dose_d = d.computeMeisbergerRatio(source_list)
-    # dose_e = e.computeMeisbergerRatio(source_list)
+    dose_a = a.computeMeisbergerRatio(source_list)
+    dose_b = b.computeMeisbergerRatio(source_list)
+    dose_c = c.computeMeisbergerRatio(source_list)
+    dose_d = d.computeMeisbergerRatio(source_list)
+    dose_e = e.computeMeisbergerRatio(source_list)
 
 
     dose_list = [dose_a,
