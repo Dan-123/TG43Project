@@ -18,6 +18,14 @@ class AppWindow(QDialog):
         self.ui.setupUi(self)
         self.show()
 
+    def getSourcePos(self):
+        x, y, z, activity, time = round(self.ui.source_x.value(), 1),\
+                                  round(self.ui.source_y.value(), 1),\
+                                  round(self.ui.source_z.value(), 1),\
+                                  round(self.ui.source_activity.value(), 1),\
+                                  round(self.ui.source_time.value(), 1)
+        return x, y, z, activity, time
+
 
     def addSource(self):
 
@@ -71,6 +79,9 @@ class AppWindow(QDialog):
     def clearSources(self):
         self.ui.source_table.setRowCount(0)
         self.source_list = []
+
+    def addGraphics(self):
+        pass
 
 
 app = QApplication(sys.argv)
