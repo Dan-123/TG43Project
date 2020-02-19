@@ -4,7 +4,7 @@ import numpy as np
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
-from TG43_GUI_v1_3 import Ui_Dialog
+from TG43_GUI_v1_4 import Ui_Dialog
 import TG43
 
 class AppWindow(QDialog):
@@ -52,13 +52,20 @@ class AppWindow(QDialog):
                   round(self.ui.dose_ref_z.value(), 1)
         ref = TG43.DoseRefPoint(x, y, z)
         dose = ref.computeDose(self.source_list)
+        total_dose = round(np.sum(dose), 2)
+        mr_dose = ref.computeMeisbergerRatio(self.source_list)
+        total_mr_dose = round(np.sum(mr_dose), 2)
+        percent_diff = 100 * (total_dose - total_mr_dose) / (total_dose)
+        percent_diff = round(percent_diff, 2)
         self.refpoint_list.append(ref)
         row_pos = self.ui.refpoint_table.rowCount()
         self.ui.refpoint_table.insertRow(row_pos)
         self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(x)))
         self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(z)))
-        self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(round(np.sum(dose), 2))))
+        self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(total_dose)))
+        self.ui.refpoint_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(total_mr_dose)))
+        self.ui.refpoint_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(percent_diff)))
 
     def runExample(self):
         """
@@ -93,11 +100,18 @@ class AppWindow(QDialog):
 
         row_pos = 0
         for refpoint in self.refpoint_list:
+
+            dose = round(np.sum(refpoint.computeDose(self.source_list)))
+            mr = round(np.sum(refpoint.computeMeisbergerRatio(self.source_list)))
             self.ui.refpoint_table.insertRow(row_pos)
             self.ui.refpoint_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(refpoint.x)))
             self.ui.refpoint_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(refpoint.y)))
             self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(refpoint.z)))
-            self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(round(np.sum(refpoint.computeDose(self.source_list)), 2))))
+            self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(dose)))
+            self.ui.refpoint_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(mr)))
+            percent_diff = 100 * (dose - mr)/(dose)
+            self.ui.refpoint_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(round(percent_diff, 2))))
+
             row_pos += 1
 
 
