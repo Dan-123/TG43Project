@@ -1,10 +1,17 @@
 import sys
 import numpy as np
+import time
+import pandas as pd
+from pandas.plotting import table
+import matplotlib.pyplot as plt
+import plotly.express as px
+
+from mpl_toolkits.mplot3d import Axes3D
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
-from TG43_GUI_v1_4 import Ui_Dialog
+from TG43_GUI_v1_7 import Ui_Dialog
 import TG43
 
 class AppWindow(QDialog):
@@ -55,7 +62,7 @@ class AppWindow(QDialog):
         total_dose = round(np.sum(dose), 2)
         mr_dose = ref.computeMeisbergerRatio(self.source_list)
         total_mr_dose = round(np.sum(mr_dose), 2)
-        percent_diff = 100 * (total_dose - total_mr_dose) / (total_dose)
+        percent_diff = 100 * (total_mr_dose - total_dose) / ((total_dose + total_mr_dose)/2)
         percent_diff = round(percent_diff, 2)
         self.refpoint_list.append(ref)
         row_pos = self.ui.refpoint_table.rowCount()
@@ -100,7 +107,6 @@ class AppWindow(QDialog):
 
         row_pos = 0
         for refpoint in self.refpoint_list:
-
             dose = round(np.sum(refpoint.computeDose(self.source_list)))
             mr = round(np.sum(refpoint.computeMeisbergerRatio(self.source_list)))
             self.ui.refpoint_table.insertRow(row_pos)
@@ -109,9 +115,8 @@ class AppWindow(QDialog):
             self.ui.refpoint_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(refpoint.z)))
             self.ui.refpoint_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(dose)))
             self.ui.refpoint_table.setItem(row_pos, 4, QtWidgets.QTableWidgetItem(str(mr)))
-            percent_diff = 100 * (dose - mr)/(dose)
+            percent_diff = 100 * (mr - dose)/((dose + mr)/2)
             self.ui.refpoint_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(round(percent_diff, 2))))
-
             row_pos += 1
 
 
@@ -123,8 +128,67 @@ class AppWindow(QDialog):
         self.ui.source_table.setRowCount(0)
         self.source_list = []
 
-    def addGraphics(self):
-        pass
+    def plotLayout(self):
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        source_x = []
+        source_y = []
+        source_z = []
+        for source in self.source_list:
+            source_x.append(source.x)
+            source_y.append(source.y)
+            source_z.append(source.z)
+
+        ref_x = []
+        ref_y = []
+        ref_z = []
+        for ref in self.refpoint_list:
+            ref_x.append(ref.x)
+            ref_y.append(ref.y)
+            ref_z.append(ref.z)
+
+        ax.scatter(source_x, source_y, source_z, marker='o', label='Sources')
+        ax.scatter(ref_x, ref_y, ref_z, marker='x', label='Dose Reference Points')
+
+        ax.set_xlabel('x (cm)')
+        ax.set_ylabel('y (cm)')
+        ax.set_zlabel('z (cm)')
+
+        ax.legend()
+
+        plt.show()
+
+
+    def printToExcel(self):
+
+        TG43_doselist, MR_doselist = self.computeDoseList()
+        idx_names = []
+        column_names = []
+        for idx in range(len(TG43_doselist)): idx_names.append(f'Reference Point {idx + 1}')
+        for col in range(len(TG43_doselist[0])): column_names.append(f'Dose From Source # {col + 1}')
+
+        TG43_df = pd.DataFrame(TG43_doselist, columns=column_names, index=idx_names)
+        MR_df = pd.DataFrame(MR_doselist, columns=column_names, index=idx_names)
+
+
+        fig, ax = plt.subplots(1, 1)
+        table(ax, TG43_df)
+
+        print('TG-43 Dose Contributions')
+        print(TG43_df)
+
+
+    def computeDoseList(self):
+        TG43_doselist = []
+        MR_doselist = []
+        for refpoint in self.refpoint_list:
+            TG43_doselist.append(refpoint.computeDose(self.source_list))
+            MR_doselist.append(refpoint.computeMeisbergerRatio(self.source_list))
+
+        return TG43_doselist, MR_doselist
+
+
 
 
 app = QApplication(sys.argv)
@@ -137,5 +201,7 @@ w.ui.close_all.clicked.connect(QtWidgets.qApp.closeAllWindows)
 w.ui.run_example.clicked.connect(w.runExample)
 w.ui.delete_refpoint.clicked.connect(w.clearRefPoint)
 w.ui.delete_source.clicked.connect(w.clearSources)
+w.ui.export_btn.clicked.connect(w.printToExcel)
+w.ui.plot_btn.clicked.connect(w.plotLayout)
 
 sys.exit(app.exec_())
