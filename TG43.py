@@ -247,17 +247,17 @@ def runExample():
                    Source(3, 1, 0, 10, 10),
                    Source(3, -1, 0, 10, 10)]
 
-    # dose_a = a.computeDose(source_list)
-    # dose_b = b.computeDose(source_list)
-    # dose_c = c.computeDose(source_list)
-    # dose_d = d.computeDose(source_list)
-    # dose_e = e.computeDose(source_list)
+    dose_a = a.computeDose(source_list)
+    dose_b = b.computeDose(source_list)
+    dose_c = c.computeDose(source_list)
+    dose_d = d.computeDose(source_list)
+    dose_e = e.computeDose(source_list)
 
-    dose_a = a.computeMeisbergerRatio(source_list)
-    dose_b = b.computeMeisbergerRatio(source_list)
-    dose_c = c.computeMeisbergerRatio(source_list)
-    dose_d = d.computeMeisbergerRatio(source_list)
-    dose_e = e.computeMeisbergerRatio(source_list)
+    # dose_a = a.computeMeisbergerRatio(source_list)
+    # dose_b = b.computeMeisbergerRatio(source_list)
+    # dose_c = c.computeMeisbergerRatio(source_list)
+    # dose_d = d.computeMeisbergerRatio(source_list)
+    # dose_e = e.computeMeisbergerRatio(source_list)
 
 
     dose_list = [dose_a,
@@ -284,10 +284,12 @@ def runTest():
 def main():
     results = runExample()
     for i in range(len(results[1])):
-        print(f'Total Dose: {results[1][i]:.2f} cGy')
+        print(f'Total Dose: {results[1][i]:.2f} cGy \n \t'
+              f' with the following dose contributions: {results[0][i]} cGy')
 
-    print(runTest())
-    print(f'Num of sources: {Source._numofsources}')
+
+    # print(runTest())
+    # print(f'Num of sources: {Source._numofsources}')
 
 
 
