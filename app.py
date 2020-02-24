@@ -1,8 +1,6 @@
 import sys
 import numpy as np
-import time
 import pandas as pd
-from pandas.plotting import table
 import matplotlib.pyplot as plt
 import plotly.express as px
 
@@ -13,6 +11,11 @@ from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
 from TG43_GUI_v1_7 import Ui_Dialog
 import TG43
+
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', -1)
 
 class AppWindow(QDialog):
 
@@ -77,7 +80,6 @@ class AppWindow(QDialog):
     def runExample(self):
         """
         Function used to run example for project
-        TODO will need to clear table and create sources/ref points at predefined locations
         """
         self.ui.refpoint_table.setRowCount(0)
         self.ui.source_table.setRowCount(0)
@@ -172,11 +174,12 @@ class AppWindow(QDialog):
         MR_df = pd.DataFrame(MR_doselist, columns=column_names, index=idx_names)
 
 
-        fig, ax = plt.subplots(1, 1)
-        table(ax, TG43_df)
+        # fig, ax = plt.subplots(1, 1)
+        # table(ax, TG43_df)
 
-        print('TG-43 Dose Contributions')
-        print(TG43_df)
+        print('\033[1m'+'Dose Contributions (all units in cGy):')
+        print('\033[0m'+f'TG-43 Dose Contributions:\n {TG43_df}\n')
+        print(f'Meisburger Ratio Dose Contributions:\n {MR_df}')
 
 
     def computeDoseList(self):
