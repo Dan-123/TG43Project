@@ -92,16 +92,17 @@ class DataTable:
                  'flexisource': './source_spreadsheets/192ir-hdr-flexisource.xls',
                  'm-19': './source_spreadsheets/192ir-hdr-m-19.xls',
                  'vs2000': './source_spreadsheets/192ir-hdr-vs2000.xls',
-                 'gammamed-plus': './source_spreadsheets/192ir-hdr_varianclassic.xls'
+                 'gammamed-plus': './source_spreadsheets/192ir-hdr_gammamed_plus.xls'
                  }
 
-    def __init__(self, loc):
+    def __init__(self, type):
         """
         Constructor for DataTable class
         :param loc: path to .xls file
         """
-        self.loc = loc
-        self.sheet = pd.read_excel(loc, header=None)
+        self.type = type
+        self.loc = self.workbooks[self.type]
+        self.sheet = pd.read_excel(self.loc, header=None)
 
     def getActiveLength(self):
         """
@@ -123,11 +124,21 @@ class DataTable:
         :param r: Distance from source (in cm)
         :return: Radial dose constant at distance 'r'
         """
-        table = pd.read_excel(self.loc,
-                              skiprows=10,
-                              nrows=13,
-                              usecols="B:C",
-                              index_col=0)
+        if self.type == "flexisource" or "m-19":
+            table = pd.read_excel(self.loc,
+                                  skiprows=10,
+                                  nrows=13,
+                                  usecols="B:C",
+                                  index_col=0)
+
+        elif self.type == "gammamed-plus" or "vs2000":
+            table = pd.read_excel(self.loc,
+                                  skiprows=10,
+                                  nrows=14,
+                                  usecols="B:C",
+                                  index_col=0)
+        else:
+            print("Source not recognized")
         return np.interp(r, table.index, table.values.flatten())
 
     def getAnisotropyConst(self, r, theta):
@@ -137,11 +148,18 @@ class DataTable:
         :param theta: Angle from source's transverse plane (in radians)
         :return: Anisotropy constant at distance r and angle theta
         """
-        table = pd.read_excel(self.loc,
-                              skiprows=10,
-                              nrows=48,
-                              usecols="E:O",
-                              index_col=0)
+        if self.type == "flexisource" or "m-19" or "vs2000":
+            table = pd.read_excel(self.loc,
+                                  skiprows=10,
+                                  nrows=48,
+                                  usecols="E:O",
+                                  index_col=0)
+        elif self.type == "gammamed-plus":
+            table = pd.read_excel(self.loc,
+                                  skiprows=10,
+                                  nrows=40,
+                                  usecols="E:W",
+                                  index_col=0)
 
         f = interpolate.interp2d(table.columns,
                                  table.index,
@@ -170,26 +188,19 @@ class DataTable:
         f = interpolate.interp2d(along_vals, away_vals, along_away.T)
         return f(along, away)
 
-    def find_workbook(self):
-        """
-        Method intended to locate the specific source's workbook
-        :return:
-        """
-        pass
-
 
 class Source:
     """
     Class used to store data pertaining to specific brachytherapy source
     """
     _numofsources = 0  # Number of sources counter
-    source_types = ['varainclassic',
+    source_types = ['varianclassic',
                     'flexisource',
                     'm-19',
                     'vs2000',
                     'gammamed_plus']
 
-    def __init__(self, x, y, z, activity, time, type='IR-192'):
+    def __init__(self, x, y, z, activity, time, type):
         """
         Constructor for the Source class
         :param x: x position of source (in cm)
@@ -208,7 +219,10 @@ class Source:
         self.aks = ((activity * 1000) / 0.243) * 0.0001  # Air Kerma strength
 
         # May want to change for various sources
-        self.data = DataTable('./source_spreadsheets/192ir-hdr-flexisource.xls')
+        try:
+            self.data = DataTable(self.type)
+        except:
+            print("Error")
 
         Source._numofsources += 1
 
@@ -261,11 +275,11 @@ def runExample():
     d = DoseRefPoint(1.5, -4, 0)
     e = DoseRefPoint(4, 0, 0)
 
-    source_list = [Source(0, 0, 0, 10, 10),
-                   Source(0, 2, 0, 10, 10),
-                   Source(0, -2, 0, 10, 10),
-                   Source(3, 1, 0, 10, 10),
-                   Source(3, -1, 0, 10, 10)]
+    source_list = [Source(0, 0, 0, 10, 10, "vs2000"),
+                   Source(0, 2, 0, 10, 10, "vs2000"),
+                   Source(0, -2, 0, 10, 10, "vs2000"),
+                   Source(3, 1, 0, 10, 10, "vs2000"),
+                   Source(3, -1, 0, 10, 10, "vs2000")]
 
     dose_a = a.computeDose(source_list)
     dose_b = b.computeDose(source_list)
@@ -296,7 +310,7 @@ def runExample():
 
 def runTest():
     a = DoseRefPoint(3.1, 2.6, 0)
-    sourcelist = [Source(0, 0, 0, 10, 10)]
+    sourcelist = [Source(0, 0, 0, 10, 10, 'flexisource')]
     return a.computeMeisbergerRatio(sourcelist)
 
 

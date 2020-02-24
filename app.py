@@ -9,8 +9,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
-from TG43_GUI_v1_8 import Ui_Dialog
-import TG43
+from TG43_GUI_v1_9 import Ui_Dialog
+import TG43 as TG43
 
 
 # Display options for pandas
@@ -43,6 +43,18 @@ class AppWindow(QDialog):
                                   round(self.ui.source_time.value(), 1)
         return x, y, z, activity, time
 
+    def findSourceCode(self, source_str):
+        if source_str == "Isodose Control HDR 192Ir Flexisource":
+            return "flexisource"
+        elif source_str == "GammaMed HDR 192Ir Plus":
+            return "gammamed-plus"
+        elif source_str == "SPEC in. Co. HDR 192IR M-19":
+            return "m-19"
+        elif source_str == "Varian HDR 192IR VS2000":
+            return "vs2000"
+        else:
+            return None
+
 
     def addSource(self):
         """
@@ -50,16 +62,22 @@ class AppWindow(QDialog):
         :return:
         """
 
+        combobox_contents = [self.ui.source_type.itemText(i) for i in range(self.ui.source_type.count())]
+
         x, y, z = round(self.ui.source_x.value(), 1),\
                   round(self.ui.source_y.value(), 1),\
                   round(self.ui.source_z.value(), 1)
         activity = round(self.ui.source_activity.value(), 1)
         time = round(self.ui.source_time.value(), 1)
-        source = TG43.Source(x, y, z, activity, time)
+        type = str(self.ui.source_type.currentText())
+        type_code = self.findSourceCode(type)
+        if type_code == None:
+            return
+        source = TG43.Source(x, y, z, activity, time, type_code)
         self.source_list.append(source)
         row_pos = self.ui.source_table.rowCount()
         self.ui.source_table.insertRow(row_pos)
-        self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type)))
+        self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type).capitalize()))
         self.ui.source_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(x)))
         self.ui.source_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(y)))
         self.ui.source_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(z)))
@@ -100,15 +118,15 @@ class AppWindow(QDialog):
         """
         self.ui.refpoint_table.setRowCount(0)
         self.ui.source_table.setRowCount(0)
-        self.source_list = [TG43.Source(0, 0, 0, 10, 10),
-                            TG43.Source(0, 2, 0, 10, 10),
-                            TG43.Source(0, -2, 0, 10, 10),
-                            TG43.Source(3, 1, 0, 10, 10),
-                            TG43.Source(3, -1, 0, 10, 10)]
+        self.source_list = [TG43.Source(0, 0, 0, 10, 10, "flexisource"),
+                            TG43.Source(0, 2, 0, 10, 10, "flexisource"),
+                            TG43.Source(0, -2, 0, 10, 10, "flexisource"),
+                            TG43.Source(3, 1, 0, 10, 10, "flexisource"),
+                            TG43.Source(3, -1, 0, 10, 10, "flexisource")]
         row_pos = 0
         for source in self.source_list:
             self.ui.source_table.insertRow(row_pos)
-            self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type)))
+            self.ui.source_table.setItem(row_pos, 0, QtWidgets.QTableWidgetItem(str(source.type).capitalize()))
             self.ui.source_table.setItem(row_pos, 1, QtWidgets.QTableWidgetItem(str(source.x)))
             self.ui.source_table.setItem(row_pos, 2, QtWidgets.QTableWidgetItem(str(source.y)))
             self.ui.source_table.setItem(row_pos, 3, QtWidgets.QTableWidgetItem(str(source.z)))
