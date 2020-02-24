@@ -146,7 +146,7 @@ class AppWindow(QDialog):
         self.refpoint_list = [TG43.DoseRefPoint(-2.0, 0, 0),
                               TG43.DoseRefPoint(1.5, 0, 0),
                               TG43.DoseRefPoint(1.5, 3, 0),
-                              TG43.DoseRefPoint(1.5, 4, 0),
+                              TG43.DoseRefPoint(1.5, -4, 0),
                               TG43.DoseRefPoint(4, 0, 0)]
 
         row_pos = 0
