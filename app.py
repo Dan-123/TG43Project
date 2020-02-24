@@ -72,6 +72,13 @@ class AppWindow(QDialog):
         type = str(self.ui.source_type.currentText())
         type_code = self.findSourceCode(type)
         if type_code == None:
+            print("Please enter a source type")
+            return
+        if activity == 0:
+            print("Please enter an activity value")
+            return
+        if time == 0:
+            print("Please enter a value for time")
             return
         source = TG43.Source(x, y, z, activity, time, type_code)
         self.source_list.append(source)
