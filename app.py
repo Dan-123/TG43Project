@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.express as px
+
 
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -10,13 +10,15 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
 from TG43_GUI_v1_8 import Ui_Dialog
-# import TG43_v_1_1 as TG43
 import TG43
 
+
+# Display options for pandas
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', -1)
+pd.set_option('display.precision', 2)
 
 class AppWindow(QDialog):
 
@@ -195,7 +197,6 @@ class AppWindow(QDialog):
         as sufficient
         :return:
         """
-
         TG43_doselist, MR_doselist = self.computeDoseList()
         idx_names = []
         column_names = []
