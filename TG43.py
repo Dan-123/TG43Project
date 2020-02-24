@@ -27,18 +27,18 @@ class DoseRefPoint:
         :param source_list: A list of Source objects
         :return: A list of dose values for given sources after given time
         """
-        doselist = []                          # Initialize list to contain dose values
-        for source in source_list:             # Iterate through a list of len(source_list) sources
+        doselist = []  # Initialize list to contain dose values
+        for source in source_list:  # Iterate through a list of len(source_list) sources
             xdist = np.abs(source.x - self.x)  # Compute x, y, z distance from reference point to source
             ydist = np.abs(source.y - self.y)
             zdist = np.abs(source.z - self.z)
-            time = source.time / 60            # Time of source irradiation (converted to hours)
+            time = source.time / 60  # Time of source irradiation (converted to hours)
             r, phi, theta = cartesian2Polar(xdist,  # Call cartesian2polar to convert to polar
                                             ydist,
                                             zdist)
 
-            L = source.data.getActiveLength()              # Source active length
-            G = computeRadialDose(r, theta, L)             # Radial dose factor
+            L = source.data.getActiveLength()  # Source active length
+            G = computeRadialDose(r, theta, L)  # Radial dose factor
             G_0 = computeRadialDose(1, np.deg2rad(90), L)  # Normalized radial dose factor
 
             # Calculate dose rate
@@ -48,7 +48,7 @@ class DoseRefPoint:
                        * source.data.getRadialDoseConst(r) \
                        * source.data.getAnisotropyConst(r, np.rad2deg(theta)) \
                        * (1 / .0001)
-            Dose = DoseRate * time        # Dose in cGy
+            Dose = DoseRate * time  # Dose in cGy
             doselist.append(float(Dose))  # Append dose to doselist
         return doselist
 
@@ -59,27 +59,27 @@ class DoseRefPoint:
         :param source_list: A list of Source objects
         :return: A list of dose values for given sources after given time
         """
-        doselist = []                           # Initialize list to contain dose values
-        for source in source_list:              # Iterate through a list of len(source_list) sources
-            xdist = np.abs(source.x - self.x)   # Compute x, y, z distance from reference point to source
+        doselist = []  # Initialize list to contain dose values
+        for source in source_list:  # Iterate through a list of len(source_list) sources
+            xdist = np.abs(source.x - self.x)  # Compute x, y, z distance from reference point to source
             ydist = np.abs(source.y - self.y)
             zdist = np.abs(source.z - self.z)
-            time = source.time / 60                                 # Time of source irradiation (converted to hours)
-            A, B, C, D = 1.0128, 0.005019, -0.001178, -0.00002008   # Meisberger Constants
-            r, phi, theta = cartesian2Polar(xdist,                  # Call cartesian2polar to convert to polar
+            time = source.time / 60  # Time of source irradiation (converted to hours)
+            A, B, C, D = 1.0128, 0.005019, -0.001178, -0.00002008  # Meisberger Constants
+            r, phi, theta = cartesian2Polar(xdist,  # Call cartesian2polar to convert to polar
                                             ydist,
                                             zdist)
             f_med = 0.96
             gamma = 4.69
-            Activity = source.activity * 1000                       # Source activity (Ci to mCi)
-            T = A\
-                + (B*r)\
-                + (C*(r**2))\
-                + (D*(r**3))
+            Activity = source.activity * 1000  # Source activity (Ci to mCi)
+            T = A \
+                + (B * r) \
+                + (C * (r ** 2)) \
+                + (D * (r ** 3))
 
-            DoseRate = (f_med * Activity * gamma * T)/(r ** 2)
-            Dose = DoseRate * time          # Dose in cGy
-            doselist.append(float(Dose))    # Append dose to doselist
+            DoseRate = (f_med * Activity * gamma * T) / (r ** 2)
+            Dose = DoseRate * time  # Dose in cGy
+            doselist.append(float(Dose))  # Append dose to doselist
         return doselist
 
 
@@ -87,6 +87,14 @@ class DataTable:
     """
     Class used to hold data from .xls files
     """
+
+    workbooks = {'varianclassic': './source_spreadsheets/192ir-hdr_varianclassics.xls',
+                 'flexisource': './source_spreadsheets/192ir-hdr-flexisource.xls',
+                 'm-19': './source_spreadsheets/192ir-hdr-m-19.xls',
+                 'vs2000': './source_spreadsheets/192ir-hdr-vs2000.xls',
+                 'gammamed-plus': './source_spreadsheets/192ir-hdr_varianclassic.xls'
+                 }
+
     def __init__(self, loc):
         """
         Constructor for DataTable class
@@ -162,12 +170,24 @@ class DataTable:
         f = interpolate.interp2d(along_vals, away_vals, along_away.T)
         return f(along, away)
 
+    def find_workbook(self):
+        """
+        Method intended to locate the specific source's workbook
+        :return:
+        """
+        pass
+
 
 class Source:
     """
     Class used to store data pertaining to specific brachytherapy source
     """
     _numofsources = 0  # Number of sources counter
+    source_types = ['varainclassic',
+                    'flexisource',
+                    'm-19',
+                    'vs2000',
+                    'gammamed_plus']
 
     def __init__(self, x, y, z, activity, time, type='IR-192'):
         """
@@ -182,13 +202,13 @@ class Source:
         self.y = y
         self.z = z
         self.coordinates = [x, y, z]
-        self.activity = activity                         # source activity in Ci
-        self.time = time                                 # source time in minutes
-        self.type = type                                 # source type
+        self.activity = activity  # source activity in Ci
+        self.time = time  # source time in minutes
+        self.type = type  # source type
         self.aks = ((activity * 1000) / 0.243) * 0.0001  # Air Kerma strength
 
         # May want to change for various sources
-        self.data = DataTable('192ir-hdr-flexisource.xls')
+        self.data = DataTable('./source_spreadsheets/192ir-hdr-flexisource.xls')
 
         Source._numofsources += 1
 
@@ -259,7 +279,6 @@ def runExample():
     # dose_d = d.computeMeisbergerRatio(source_list)
     # dose_e = e.computeMeisbergerRatio(source_list)
 
-
     dose_list = [dose_a,
                  dose_b,
                  dose_c,
@@ -287,10 +306,8 @@ def main():
         print(f'Total Dose: {results[1][i]:.2f} cGy \n \t'
               f' with the following dose contributions: {results[0][i]} cGy')
 
-
     # print(runTest())
     # print(f'Num of sources: {Source._numofsources}')
-
 
 
 if __name__ == "__main__":

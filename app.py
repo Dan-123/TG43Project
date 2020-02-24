@@ -9,7 +9,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
-from TG43_GUI_v1_7 import Ui_Dialog
+from TG43_GUI_v1_8 import Ui_Dialog
+# import TG43_v_1_1 as TG43
 import TG43
 
 pd.set_option('display.max_rows', None)
@@ -19,8 +20,8 @@ pd.set_option('display.max_colwidth', -1)
 
 class AppWindow(QDialog):
 
-    source_list = []
-    refpoint_list = []
+    source_list = []    # To store input sources
+    refpoint_list = []  # To store input reference points
 
     def __init__(self):
         super().__init__()
@@ -29,6 +30,10 @@ class AppWindow(QDialog):
         self.show()
 
     def getSourcePos(self):
+        """
+        Method to find user's desired source info
+        :return: x, y, z, activity, time
+        """
         x, y, z, activity, time = round(self.ui.source_x.value(), 1),\
                                   round(self.ui.source_y.value(), 1),\
                                   round(self.ui.source_z.value(), 1),\
@@ -38,6 +43,10 @@ class AppWindow(QDialog):
 
 
     def addSource(self):
+        """
+        Method used to add and update the source to source list
+        :return:
+        """
 
         x, y, z = round(self.ui.source_x.value(), 1),\
                   round(self.ui.source_y.value(), 1),\
@@ -56,6 +65,12 @@ class AppWindow(QDialog):
         self.ui.source_table.setItem(row_pos, 5, QtWidgets.QTableWidgetItem(str(time)))
 
     def addRefPoint(self):
+        """
+        Method used to add reference point to list. This also computes the dose for that
+        reference point. This kind of causes an issue if user inputs reference points before
+        the sources.
+        :return:
+        """
         _translate = QtCore.QCoreApplication.translate
         x, y, z = round(self.ui.dose_ref_x.value(), 1),\
                   round(self.ui.dose_ref_y.value(), 1),\
@@ -123,14 +138,26 @@ class AppWindow(QDialog):
 
 
     def clearRefPoint(self):
+        """
+        Clears reference point list
+        :return:
+        """
         self.ui.refpoint_table.setRowCount(0)
         self.refpoint_list = []
 
     def clearSources(self):
+        """
+        Clears the source list
+        :return:
+        """
         self.ui.source_table.setRowCount(0)
         self.source_list = []
 
     def plotLayout(self):
+        """
+        Creates a pop-up graph of input sources and reference points
+        :return:
+        """
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
@@ -163,6 +190,11 @@ class AppWindow(QDialog):
 
 
     def printToExcel(self):
+        """
+        Doesn't actually  print to excel. I found printing the dose contributions to the terminal
+        as sufficient
+        :return:
+        """
 
         TG43_doselist, MR_doselist = self.computeDoseList()
         idx_names = []
@@ -183,6 +215,10 @@ class AppWindow(QDialog):
 
 
     def computeDoseList(self):
+        """
+        Used to compute dose for a given doselist with TG43 and Meisberger ratio procedures
+        :return: TG43 and Meisberger ratio doselists
+        """
         TG43_doselist = []
         MR_doselist = []
         for refpoint in self.refpoint_list:
