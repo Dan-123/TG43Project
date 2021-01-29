@@ -17,7 +17,7 @@ import TG43 as TG43
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
-pd.set_option('display.max_colwidth', -1)
+pd.set_option('display.max_colwidth', None)
 pd.set_option('display.precision', 2)
 
 class AppWindow(QDialog):
